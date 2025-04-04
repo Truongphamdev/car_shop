@@ -8,6 +8,12 @@ import ListCar from "./pages/ListCar";
 import CarDetail from "./pages/CarDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import BuyCar from "./pages/BuyCar";
+import DashBoard from "./pages/admin/DashBoard";
+import AdminRoute from "./pages/admin/AdminRoute";
+import NewsDetail from "./pages/NewSDetail";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
 
 function Layout() {
     const location = useLocation();
@@ -17,18 +23,26 @@ function Layout() {
         <div className="app">
             {!noHeaderRoutes.includes(location.pathname) && <Header />}
             <Routes>
+            <Route element={<AdminRoute />}>
+                    <Route path="/admin" element={<DashBoard />} />
+                </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/listCar" element={<ListCar />} />
                 <Route path="home/car/:id" element={<CarDetail />} />
+                <Route path="/news/:id" element={<NewsDetail />} />
                 {/* about */}
                 <Route path="/about" element={<About/>} />
                 {/* contact */}
                 <Route path="/contact" element={<Contact/>} />
-
-
+                {/* buycar */}
+                <Route path="/buycar/:id" element={<BuyCar />}/>
+                {/* checkout */}
+                <Route path="/checkout" element={<Checkout />} />
+                {/* oderSuccess */}
+                <Route path="orderSuccess" element={< OrderSuccess/>}/>
             </Routes>
             {!noHeaderRoutes.includes(location.pathname) && <Footer />}
         </div>

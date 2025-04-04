@@ -10,6 +10,7 @@ use App\Models\NewCar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\ContactReply;
+use App\Models\Cart;
 use App\Models\Contact;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -104,6 +105,7 @@ class CarController extends Controller
     // lưu contact
     public function storeContact(Request $request)
     {
+
         $request->validate([
             'email' => 'required|email',
             'message' => 'required|string|min:5',
@@ -118,7 +120,7 @@ class CarController extends Controller
 
         $emailSent = true;
         try {
-            Mail::to("truongnguyen01653@gmail.com")->send(
+            Mail::to($request->email)->send(
                 new ContactReply($request->message, $request->email, $request->name)
             );
         } catch (\Exception $e) {
@@ -132,5 +134,68 @@ class CarController extends Controller
                 ? 'Tin nhắn của bạn đã được gửi và email đã được gửi đến bạn!'
                 : 'Tin nhắn của bạn đã được gửi nhưng không thể gửi email!',
         ], 201);
+    }
+    // mua xe
+    public function buycar($id) {
+        $car = Car::with('car_image','category')->findOrFail($id);
+        return response()->json([
+            'car'=>$car
+        ]);
+    }
+    // cart
+    public function indexCart() {
+        $cart = Cart::where('user_id',Auth::id())->with('car')->get();
+        return response()->json([
+            'cart'=>$cart
+        ]);
+    }
+
+    public function storeCart(Request $request) {
+        $request->validate([
+            'car_id' => 'required|exists:cars,id',
+            'quantity' => 'integer|min:1'
+        ]);
+        try {
+            // Tìm kiếm sản phẩm trong giỏ hàng
+            $cartItem = Cart::where('user_id', Auth::id())
+                            ->where('car_id', $request->car_id)
+                            ->first();
+    
+            if ($cartItem) {
+                // Nếu sản phẩm đã tồn tại, tăng số lượng
+                $cartItem->quantity += $request->quantity;
+                $cartItem->save(); // Lưu thay đổi
+                return response()->json(['message' => 'Đã cập nhật số lượng trong giỏ hàng', 'cart' => $cartItem], 200);
+            } else {
+                // Nếu sản phẩm chưa tồn tại, tạo mới
+                $cartItem = Cart::create([
+                    'user_id' => Auth::id(),
+                    'car_id' => $request->car_id,
+                    'quantity' => $request->quantity
+                ]);
+                return response()->json(['message' => 'Đã thêm vào giỏ hàng', 'cart' => $cartItem], 200);
+            }
+        } catch (\Exception $e) {
+            // Ghi log lỗi
+            Log::error('Lỗi khi thêm vào giỏ hàng: ' . $e->getMessage());
+            return response()->json(['message' => 'Không thể thêm vào giỏ hàng!'], 500);
+        }
+    }
+    public function removeCart($id) {
+        $cart = Cart::where('user_id',Auth::id())->where('id',$id)->first();
+        if($cart) {
+            $cart->delete();
+            return response()->json(['message' => 'Đã xóa khỏi giỏ hàng']);
+        }
+        return response()->json(['message' => 'Không tìm thấy xe'], 404);
+    }
+    // tin tức
+    public function shownews($id) {
+        $new = NewCar::findOrFail($id);
+        $relatedNew = NewCar::where('id', '!=', $id)->take(2)->get();
+        return response()->json([
+            'new'=>$new,
+            'relatedNew'=>$relatedNew
+        ]) ;
     }
 }

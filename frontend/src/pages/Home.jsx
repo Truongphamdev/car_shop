@@ -100,7 +100,7 @@ const Home = () => {
                     <h1 className="text-5xl md:text-7xl font-bold uppercase">Khám Phá Xe Hơi Đẳng Cấp</h1>
                     <p className="mt-4 text-lg opacity-80">Tận hưởng những dòng xe mới nhất với giá ưu đãi tốt nhất.</p>
                     <a
-                        href=""
+                        href="/listCar"
                         className="mt-6 inline-block px-8 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg shadow-lg transition transform hover:scale-105"
                     >
                         Khám Phá Ngay

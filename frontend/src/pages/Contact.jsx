@@ -29,6 +29,7 @@ const Contact = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
+    alert("vui lòng đăng nhập để gửi liên hệ");
       setError("Vui lòng đăng nhập để gửi liên hệ!");
       setLoading(false);
       return;

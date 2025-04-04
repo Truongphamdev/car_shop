@@ -22,6 +22,7 @@ const Login = () => {
             setUser(res.data.user.id);
             localStorage.setItem("token", res.data.token); // Lưu token
             localStorage.setItem("current_id",res.data.user.id);
+            localStorage.setItem("user", JSON.stringify(res.data.user));
             setError(""); // Xóa lỗi nếu có
             if (res.data.user.is_admin === 1) {
                 navigate("/admin");

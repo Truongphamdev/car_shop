@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link,useLocation } from "react-router-dom";
 import axios from "axios";
 
 const Header = () => {
+    const location = useLocation();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const [cartItems, setCartItems] = useState([]);
     const navigate = useNavigate();
-
+    const carImages = JSON.parse(localStorage.getItem('carImages')) || {};
+    const token = localStorage.getItem("token");
+    
     useEffect(() => {
-        const token = localStorage.getItem("token");
         console.log("token: ",token);
         if (token) {
             setIsLoggedIn(true);
@@ -28,7 +32,42 @@ const Header = () => {
                 });
         }
     }, []);
+    // lấy tt giỏ hàng
+    const fetchCart= async () => {
+        try {
+            if(!token) {
+                return
+            }
+            const response = await axios.get("http://localhost:8000/home/cart",
+                {headers: { Authorization: `Bearer ${token}` },}
+            );
+            const cartArray = Array.isArray(response.data.cart) ? response.data.cart : Object.values(response.data.cart);
+            setCartItems(cartArray); // Cập nhật cartItems với dữ liệu từ server
+            console.log("dữ liệu cart",response.data.cart)
+        } catch (error) {
+            console.error("Lỗi khi lấy giỏ hàng:", error);
+        }
+    }
+    useEffect(() => {
+        fetchCart();
+      }, [token]); 
 
+    const handleCheckoutCart=()=> {
+      navigate('/checkout',{state:{cartItems,fromCart:true}})
+    }
+    //   remove cart
+      const removeFromCart = async (id) => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.delete(`http://localhost:8000/home/removeCart/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          alert(response.data.message);
+          setCartItems(cartItems.filter((item) => item.id !== id));
+        } catch (error) {
+          alert("Không thể xóa khỏi giỏ hàng!");
+        }
+      };
     const handleLogout = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -47,7 +86,8 @@ const Header = () => {
             console.error("Logout failed:", err);
         }
     };
-
+    console.log("cartItem",cartItems)
+    const totalPrice = cartItems.reduce((sum, item) => sum + item.car.price * item.quantity, 0);
     return (
         <header className="bg-white shadow-md">
             <div className="container mx-auto flex justify-between items-center py-4 px-6 h-[100px]">
@@ -96,25 +136,79 @@ const Header = () => {
 
                 {/* Giỏ Hàng & Tài Khoản */}
                 <div className="flex items-center space-x-4">
-                    {/* Giỏ hàng */}
-                    <a href="#" className="relative">
-                        <svg
-                            className="w-6 h-6 text-gray-700 hover:text-blue-600 transition"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            viewBox="0 0 24 24"
+          {/* Giỏ hàng */}
+          <div className="relative">
+            <button
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              className="relative focus:outline-none"
+            >
+              <svg
+                className="w-6 h-6 text-gray-700 hover:text-blue-600 transition"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 3h2l1 4h13l1-4h2M5 21a2 2 0 100-4 2 2 0 000 4zm14 0a2 2 0 100-4 2 2 0 000 4zM7 8h10l1 9H6l1-9z"
+                />
+              </svg>
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {cartItems.length}
+              </span>
+            </button>
+
+            {/* Dropdown Giỏ hàng */}
+            {isCartOpen && (
+              <div
+                className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-md p-4 z-50 max-h-96 overflow-y-auto"
+                style={{ zIndex: 999 }}
+              >
+                {cartItems.length === 0 ? (
+                  <p className="text-gray-500 text-center">Giỏ hàng trống</p>
+                ) : (
+                  <>
+                    {cartItems.map((item) => (
+                      <div key={item.id} className="flex items-center mb-4 border-b pb-2">
+                        <img
+                          src={`http://localhost:8000/${carImages[item.car_id]}`}
+                          alt={item.car.name}
+                          className="w-16 h-16 object-cover rounded-lg mr-2"
+                        />
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold">{item.car.name}</h3>
+                          <p className="text-xs text-gray-600">
+                            {item.quantity} x{" "}
+                           {item.car.price.toLocaleString()} $
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="text-red-500 hover:text-red-700 ml-2"
                         >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M3 3h2l1 4h13l1-4h2M5 21a2 2 0 100-4 2 2 0 000 4zm14 0a2 2 0 100-4 2 2 0 000 4zM7 8h10l1 9H6l1-9z"
-                            />
-                        </svg>
-                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                            13
-                        </span>
-                    </a>
+                          ❌
+                        </button>
+                      </div>
+                    ))}
+                    <div className="border-t pt-2">
+                      <p className="text-sm font-bold">
+                        Tổng tiền: {totalPrice.toLocaleString()} $
+                      </p>
+                      <button
+                        
+                        className="block mt-2 w-full bg-blue-500 text-white text-center py-2 rounded-lg hover:bg-blue-600"
+                        onClick={() => {setIsCartOpen(false);handleCheckoutCart()}}
+                      >
+                        Mua Ngay
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
 
                     {isLoggedIn ? (
                         <div className="relative">

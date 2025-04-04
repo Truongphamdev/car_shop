@@ -25,6 +25,7 @@ class ContactReply extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            
             subject: 'Cảm ơn bạn đã liên hệ với chúng tôi!',
         );
     }

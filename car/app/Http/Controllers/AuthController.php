@@ -30,7 +30,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($request->only('email', 'password'))) {
             $user = Auth::user();
-            $token = $user->createToken('myapp')->plainTextToken; // Lỗi ở đây?
+            $token = $user->createToken('myapp')->plainTextToken;
             if ($request->expectsJson()) {
                 return response()->json(['token' => $token,'user' => [
                         'id' => $user->id,
@@ -73,8 +73,9 @@ class AuthController extends Controller
         'email' => $request->email,
         'password' => Hash::make($request->password), 
         ]);
+        $token = $user->createToken('myapp')->plainTextToken;
         if ($request->expectsJson()) {
-            return response()->json(['message' => 'Đăng ký thành công']);
+            return response()->json(['token'=>$token,'message' => 'Đăng ký thành công']);
         }
         Auth::login($user);
         return redirect()->route('home')->with('success', 'Đăng ký thành công!');

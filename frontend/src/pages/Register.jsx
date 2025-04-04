@@ -22,9 +22,13 @@ const Register = () => {
                 password_confirmation: passwordConfirmation,
             });
             console.log("Dữ liệu từ API:", res.data);
-            setToken(res.data.token);
-            localStorage.setItem("token", res.data.token); // Lưu token
-            navigate("/home");
+            if (res.data.token) {
+                setToken(res.data.token); // Lưu vào state (có thể không cần)
+                localStorage.setItem("token", res.data.token); // Lưu token vào localStorage
+                navigate("/home");
+            } else {
+                alert("Không nhận được token từ server!");
+            }
         } catch (err) {
             if (err.response?.data?.errors) {
                 setErrors(err.response.data.errors); // Gán lỗi vào state
