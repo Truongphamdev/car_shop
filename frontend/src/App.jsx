@@ -14,6 +14,7 @@ import AdminRoute from "./pages/admin/AdminRoute";
 import NewsDetail from "./pages/NewSDetail";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
+import Like from "./pages/Like";
 
 function Layout() {
     const location = useLocation();
@@ -43,6 +44,8 @@ function Layout() {
                 <Route path="/checkout" element={<Checkout />} />
                 {/* oderSuccess */}
                 <Route path="orderSuccess" element={< OrderSuccess/>}/>
+                {/* like */}
+                <Route path="/likes" element={<Like />} />
             </Routes>
             {!noHeaderRoutes.includes(location.pathname) && <Footer />}
         </div>

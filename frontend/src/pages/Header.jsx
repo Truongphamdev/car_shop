@@ -132,6 +132,13 @@ const Header = () => {
                         }`}>
                         Liên Hệ
                     </a>
+                    <a href="/likes" className={`text-xl ${
+                            window.location.pathname === "/likes"
+                                ? "text-blue-600 font-bold"
+                                : "text-gray-700 hover:text-blue-600"
+                        }`}>
+                        Yêu Thích
+                    </a>
                 </nav>
 
                 {/* Giỏ Hàng & Tài Khoản */}

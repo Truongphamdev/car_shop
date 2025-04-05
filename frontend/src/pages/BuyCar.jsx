@@ -14,20 +14,28 @@ const BuyCar = () => {
 
   // Lấy thông tin xe từ API
   const fetchCarDetails = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8000/home/buycar/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setCar(response.data.car); // Dữ liệu xe nằm trong response.data.car
+    const token = localStorage.getItem("token");
+    if (!token) {
+    alert("vui lòng đăng nhập để gửi liên hệ");
+      setError("Vui lòng đăng nhập để gửi liên hệ!");
       setLoading(false);
-      console.log("Dữ liệu buycar:", response.data.car);
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin xe:", error);
-      setError("Không thể tải thông tin xe. Vui lòng thử lại!");
-      setLoading(false);
+      return;
     }
+      try {
+        const response = await axios.get(`http://localhost:8000/home/buycar/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setCar(response.data.car); // Dữ liệu xe nằm trong response.data.car
+        setLoading(false);
+        console.log("Dữ liệu buycar:", response.data.car);
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin xe:", error);
+        setError("Không thể tải thông tin xe. Vui lòng thử lại!");
+        setLoading(false);
+      }
+    
   };
 
   // // Xử lý mua xe

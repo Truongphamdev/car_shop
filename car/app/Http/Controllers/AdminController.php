@@ -19,7 +19,7 @@ class AdminController extends Controller
         try {
             $cars = Car::with('car_image', 'category')->get(); // Dùng get() thay vì all()
             $users = User::all();
-            $categories = Category::all();
+            $categories = Category::with('car')->get();
             $brands = Brand::all();
             return response()->json([
                 'cars' => $cars,

@@ -213,23 +213,53 @@ const deleteProduct = (id) => {
           <h1 className="text-3xl mb-5 text-sky-500">Có {data.cars.length} sản phẩm</h1>
   {/* Vùng cuộn */}
   <div className="max-h-96 overflow-y-auto">
-    <ul>
-      {data.cars.map((product) => (
-        <li key={product.id} className="flex justify-between p-2 border-b items-center">
-          <img src={`http://localhost:8000/${product.car_image[0].image_url}`} 
-               alt={product.name} 
-               className="w-12 h-12 object-cover rounded" />
-          <span>{product.name} - {product.price.toLocaleString()}$</span>
-          <button
-                    onClick={() => {editproduct(product);setIsEditOpen(true)}}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
-                  >
-                    Sửa
-                  </button>
-          <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={()=>deleteProduct(product.id)}>Xóa</button>
-        </li>
-      ))}
-    </ul>
+    {data.categories.map((category)=>(
+      <div key={category.id}>
+        <h3 className="text-xl font-bold text-gray-700 mt-8 mb-4">{category.name}</h3>
+        <div className="grid grid-cols-3 gap-4">
+          {data.cars.filter((car)=> 
+            car.category_id === category.id
+          ).map((car)=> (
+            <div
+            key={car.id}
+            className="bg-white shadow-md rounded-lg p-4 relative"
+          >
+            <img
+              src={`http://localhost:8000/${car.car_image[0].image_url}`}
+              alt={car.name}
+              className="w-full h-40 object-cover mb-2"
+            />
+            <h3 className="text-lg font-bold">{car.name}</h3>
+            <p className="text-gray-600">Giá: {car.price}</p>
+            <p className="text-gray-600">Số lượng: {car.quantity}</p>
+            <div className="mt-6 flex justify-around">
+              <div>
+
+              <button
+                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl shadow-lg hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none"
+                onClick={() => {editproduct(car);setIsEditOpen(true)}}
+                >
+                Sửa
+              </button>
+                </div>
+                <div>
+
+              <button
+                className="px-6 py-3 bg-red-500 text-white font-semibold rounded-xl shadow-md hover:bg-red-600 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition-all duration-300"
+                onClick={() => deleteProduct(car.id)}
+                >
+                Xóa
+              </button>
+                </div>
+            </div>
+          </div>
+          ))
+          }
+        </div>
+      </div>
+
+    ))}
+
   </div>
 </div>
 

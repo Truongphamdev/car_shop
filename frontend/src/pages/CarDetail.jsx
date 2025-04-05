@@ -93,7 +93,30 @@ const CarDetail = () => {
         localStorage.setItem('selectedCarImage', JSON.stringify(selectedImage));
         navigate(`/buycar/${data.car.id}`);
     };
-    
+    const addlike = async (id) => {
+        try {
+          const token = localStorage.getItem("token"); // hoặc cách bạn lưu token
+          const res = await axios.post(
+            `http://localhost:8000/home/addlike/${id}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log("Đã thêm vào yêu thích:", res.data.message);
+          alert("đã thêm vào yêu thích");
+        } catch (error) {
+            if (error.response && error.response.status === 409) {
+                alert("Xe này đã nằm trong danh sách yêu thích!");
+              } else {
+                console.error("Có lỗi khi thêm like", error);
+              }
+        }
+      };
+      
+
     const handleSubmitReview = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
@@ -144,13 +167,19 @@ const CarDetail = () => {
                     <p className="mt-4">{data.car.description}</p>
 
                 <div className="flex space-x-4 mt-6">
+
                     <button onClick={handleBuyCar} className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                         Mua xe
                     </button>
                     <button onClick={addtoCart} className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600">
                         Thêm vào giỏ hàng
                     </button>
+       
                 </div>
+
+                    <button onClick={()=> addlike(data.car.id)} className="px-6 mt-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                        Thêm vào Yêu thích
+                    </button>
                 </div>
 
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg me-20">

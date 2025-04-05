@@ -15,6 +15,7 @@ use App\Models\Contact;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
+use function PHPSTORM_META\map;
 
 class CarController extends Controller
 {
@@ -197,5 +198,32 @@ class CarController extends Controller
             'new'=>$new,
             'relatedNew'=>$relatedNew
         ]) ;
+    }
+    // thêm vào yêu thích
+    public function getlike() {
+        $user = Auth::user();
+        
+        $likedCars = $user->likedCars()->with('car_image')->get();
+        return response()->json([
+            'likes'=>$likedCars
+        ]);
+    }
+    public function addlike($id) {
+        $user = Auth::user();
+        if ($user->likedCars->contains($id)) {
+            return response()->json([
+                'error' => 'Xe này đã có trong danh sách yêu thích'
+            ], 409); // 409 Conflict
+        }
+        $user->likedCars()->attach($id);
+    
+        return response()->json(['message' => 'Thêm thành công']);
+    }
+
+    public function removelike($id) {
+        $user = Auth::user();
+        $user->likedCars()->detach($id);
+        return response()->json(['message'=>"xóa thành công"]);
+
     }
 }

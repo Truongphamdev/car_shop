@@ -49,6 +49,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function likedCars()
+    {
+        // Định nghĩa quan hệ nhiều-nhiều với bảng cars thông qua bảng trung gian likes
+        return $this->belongsToMany(Car::class, 'likes')->withTimestamps();
+    }
     public function order(){
         return $this->hasMany(Order::class);
     }
