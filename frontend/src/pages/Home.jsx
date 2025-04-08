@@ -9,6 +9,7 @@ import "swiper/css/pagination";
 import anh1 from "../assets/images/slide/anh1.jpg"
 import anh2 from "../assets/images/slide/anh2.jpg"
 import anh3 from "../assets/images/slide/anh3.jpg"
+import ChatraChat from "./ChatraChat";
 
 
 const Home = () => {
@@ -72,6 +73,7 @@ const Home = () => {
     const handleCategoryClick = (categoryId)=> {
         navigate(`?category_id=${categoryId}`);
     }
+
     return (
         <div>
             {error && <div className="text-red-500 text-center py-4">{error}</div>}
@@ -142,7 +144,7 @@ const Home = () => {
                                 )}
                                 <h3 className="text-2xl font-semibold mt-4">{car.name}</h3>
                                 <p className="text-gray-600 mt-2 font-semibold text-xl text-blue-600">
-                                    {car.price ? car.price.toLocaleString() : "N/A"} $
+                                    {car.price ?car.price.toLocaleString() : "N/A"} Đ
                                 </p>
                                 <a
                                     href={`home/car/${car.id}`}
@@ -199,6 +201,7 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+            <ChatraChat/>
         </div>
     );
 };

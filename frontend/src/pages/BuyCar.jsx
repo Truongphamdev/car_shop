@@ -59,7 +59,7 @@ const BuyCar = () => {
   // };
 
   const handleCheckoutCar = () => {
-    navigate('/checkout',{state:{car,fromCart:false}})
+    navigate('/checkout',{state:{car,fromCar:true}})
   }
 
   useEffect(() => {
@@ -130,7 +130,7 @@ const BuyCar = () => {
             <div>
               <h2 className="text-3xl font-semibold text-gray-800 mb-4">{car.name}</h2>
               <p className="text-xl font-bold text-blue-600 mb-4">
-              Giá: {car.price.toLocaleString()} $
+              Giá: {car.price.toLocaleString()} Đ
               </p>
               <p className="text-gray-600 mb-6">{car.description}</p>
               <ul className="space-y-2">
@@ -173,7 +173,7 @@ const BuyCar = () => {
               <h3 className="text-2xl font-semibold text-gray-800 mb-4">Xác Nhận Mua Xe</h3>
               <p className="text-gray-600 mb-6">
                 Bạn có chắc chắn muốn mua <strong>{car.name}</strong> với giá{" "}
-                <strong>Giá: {car.price.toLocaleString()} $</strong> không?
+                <strong>Giá: {car.price.toLocaleString()} Đ </strong> không?
               </p>
               <div className="flex justify-end space-x-4">
                 <button
@@ -195,20 +195,7 @@ const BuyCar = () => {
         )}
       </div>
 
-      {/* CSS Animation */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 1s ease-in-out;
-        }
-      `}</style>
+    
     </div>
   );
 };

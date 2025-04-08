@@ -12,13 +12,13 @@ use Illuminate\Queue\SerializesModels;
 class OrderShipped extends Mailable
 {
     use Queueable, SerializesModels;
-    public $order;
+    public $orders;
     /**
      * Create a new message instance.
      */
-    public function __construct($order)
+    public function __construct($orders)
     {
-        $this->order = $order;
+        $this->orders = $orders;
     }
 
     /**
@@ -39,7 +39,7 @@ class OrderShipped extends Mailable
         return new Content(
             view: 'emails.order',
             with:[
-                'order' => $this->order
+                'orders' => $this->orders
             ]
         );
     }

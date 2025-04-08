@@ -10,9 +10,11 @@
     <p>Cảm ơn bạn đã đặt hàng tại {{ config('app.name') }}!</p>
     <p>Thông tin đơn hàng:</p>
     <ul>
-        <li>Mã đơn hàng: {{ $order['id'] }}</li>
-        <li>Tổng tiền: {{ number_format($order['total_price']) }}đ</li>
-        <li>Phương thức thanh toán: {{ ucfirst($order['payment_method']) }}</li>
+        <li>Mã đơn hàng: {{ $orders['id'] }}</li>
+        <li>Tổng tiền: {{ number_format($orders['total_price']) }}đ</li>
+        <li>Phương thức thanh toán: {{ ucfirst($orders['payment_method']) }}</li>
+        <li>Tên: {{$orders['name']}}</li>
+        <li>email: {{$orders['email']}}</li>
     </ul>
     <p>Chúng tôi sẽ giao hàng sớm nhất có thể.</p>
     <p>Trân trọng,</p>

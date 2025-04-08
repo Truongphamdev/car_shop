@@ -192,7 +192,7 @@ public function destroyUser($id) {
     }
 }
 public function getOrder() {
-    $orders = Order::with('orderDetail','payment','user')->get();
+    $orders = Order::with('orderDetail','payment','user')->orderBy('created_at', 'desc')->take(20)->get();
     return response()->json(['orders'=>$orders]);
 }
 public function postorder(Request $request, $id) {
@@ -210,6 +210,20 @@ public function postorder(Request $request, $id) {
 
     }
 }
+public function destroyOrder($id) {
+    try {
 
+        $order = Order::findOrFail($id);
+        
+        $order->delete();
+        return response()->json([
+            'message'=>"xóa thành công đơn hàng"
+        ]);
+    }
+    catch(\Exception $e) {
+        Log::error('Lỗi delete completed sản phẩm: '.$e->getMessage());
+
+    }
+}
     
 }

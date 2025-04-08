@@ -108,7 +108,7 @@ const ListCar = () => {
                                     Thương hiệu: {car.brand?.name || "Không xác định"}
                                 </p>
                                 <p className="text-xl text-red-500 font-semibold mt-2">
-                                    {car.price ? car.price.toLocaleString() : "N/A"} $
+                                    {car.price ? car.price.toLocaleString() : "N/A"} Đ
                                 </p>
                             </div>
                             <Link

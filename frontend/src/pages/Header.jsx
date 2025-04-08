@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate,Link,useLocation } from "react-router-dom";
 import axios from "axios";
+import { useCart } from "./CartContext";
 
 const Header = () => {
     const location = useLocation();
@@ -8,10 +9,11 @@ const Header = () => {
     const [userName, setUserName] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
-    const [cartItems, setCartItems] = useState([]);
+
     const navigate = useNavigate();
     const carImages = JSON.parse(localStorage.getItem('carImages')) || {};
     const token = localStorage.getItem("token");
+    const {cart,setCart,fetchCart} = useCart();
     
     useEffect(() => {
         console.log("token: ",token);
@@ -32,29 +34,15 @@ const Header = () => {
                 });
         }
     }, []);
-    // lấy tt giỏ hàng
-    const fetchCart= async () => {
-        try {
-            if(!token) {
-                return
-            }
-            const response = await axios.get("http://localhost:8000/home/cart",
-                {headers: { Authorization: `Bearer ${token}` },}
-            );
-            const cartArray = Array.isArray(response.data.cart) ? response.data.cart : Object.values(response.data.cart);
-            setCartItems(cartArray); // Cập nhật cartItems với dữ liệu từ server
-            console.log("dữ liệu cart",response.data.cart)
-        } catch (error) {
-            console.error("Lỗi khi lấy giỏ hàng:", error);
-        }
-    }
+
     useEffect(() => {
         fetchCart();
       }, [token]); 
 
     const handleCheckoutCart=()=> {
-      navigate('/checkout',{state:{cartItems,fromCart:true}})
+      navigate('/checkout')
     }
+
     //   remove cart
       const removeFromCart = async (id) => {
         try {
@@ -63,7 +51,7 @@ const Header = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
           alert(response.data.message);
-          setCartItems(cartItems.filter((item) => item.id !== id));
+          setCart(cart.filter((item) => item.id !== id));
         } catch (error) {
           alert("Không thể xóa khỏi giỏ hàng!");
         }
@@ -86,8 +74,22 @@ const Header = () => {
             console.error("Logout failed:", err);
         }
     };
-    console.log("cartItem",cartItems)
-    const totalPrice = cartItems.reduce((sum, item) => sum + item.car.price * item.quantity, 0);
+    console.log("cartItem",cart)
+    const totalPrice = cart.reduce((sum, item) => sum + item.car.price * item.quantity, 0);
+    // thêm số lượng
+    const addQuantity = (id) => {
+      setCart((prev) =>
+        prev.map((item)=> item.id===id?{...item,quantity:item.quantity+1}:item)
+      );
+    };
+    // giảm
+    const subQuantity = (id)=> {
+      setCart((prev)=>
+      prev.map((item)=>
+      item.id===id?{...item,quantity:item.quantity-1}:item
+      )
+      )
+    }
     return (
         <header className="bg-white shadow-md">
             <div className="container mx-auto flex justify-between items-center py-4 px-6 h-[100px]">
@@ -163,7 +165,7 @@ const Header = () => {
                 />
               </svg>
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {cartItems.length}
+                {cart.length}
               </span>
             </button>
 
@@ -173,11 +175,11 @@ const Header = () => {
                 className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-md p-4 z-50 max-h-96 overflow-y-auto"
                 style={{ zIndex: 999 }}
               >
-                {cartItems.length === 0 ? (
+                {cart.length === 0 ? (
                   <p className="text-gray-500 text-center">Giỏ hàng trống</p>
                 ) : (
                   <>
-                    {cartItems.map((item) => (
+                    {cart.map((item) => (
                       <div key={item.id} className="flex items-center mb-4 border-b pb-2">
                         <img
                           src={`http://localhost:8000/${carImages[item.car_id]}`}
@@ -188,20 +190,34 @@ const Header = () => {
                           <h3 className="text-sm font-semibold">{item.car.name}</h3>
                           <p className="text-xs text-gray-600">
                             {item.quantity} x{" "}
-                           {item.car.price.toLocaleString()} $
+                           {item.car.price.toLocaleString()} Đ
                           </p>
                         </div>
+                        <div>
+                        <button
+                      onClick={() => subQuantity(item.id)}
+                      disabled={item.quantity <= 0}
+                      className={`text-black-500 text-lg px-3 rounded-lg me-2
+                        ${item.quantity <= 0 ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-orange-800 bg-orange-500'}
+                      `}
+                    >
+                      -
+                    </button>
+                      
+                        <button onClick={()=>addQuantity(item.id)} className="text-black-500 text-lg px-3 rounded-lg hover:bg-yellow-800 bg-yellow-500">+</button>
+                      </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
                           className="text-red-500 hover:text-red-700 ml-2"
                         >
                           ❌
                         </button>
+
                       </div>
                     ))}
                     <div className="border-t pt-2">
                       <p className="text-sm font-bold">
-                        Tổng tiền: {totalPrice.toLocaleString()} $
+                        Tổng tiền: {totalPrice.toLocaleString()} Đ
                       </p>
                       <button
                         
@@ -249,7 +265,7 @@ const Header = () => {
                                 style={{ zIndex: 999 }}
                             >
                                 <a
-                                    href="#"
+                                    href="/profile"
                                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                                 >
                                     Hồ sơ

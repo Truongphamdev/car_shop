@@ -10,12 +10,17 @@ use App\Models\Order_detail;
 use App\Models\Payment;
 use App\Models\Shipping_fee;
 use App\Models\Coupon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 class CheckoutController extends Controller
 
 {
+    public function getuser() {
+        $user = Auth::user();
+        return response()->json(['user'=>$user]);
+    }
     public function getcoupon() {
         $coupons = Coupon::all();
     return response()->json($coupons);
@@ -51,11 +56,13 @@ class CheckoutController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|integer|min:0',
         ]);
-        $user = $request->user();
-        $order = [
+        $user = Auth::user();
+        $orders = [
             'id' => rand(1000, 9999), // Giả lập mã đơn hàng
             'total_price' => $request->total_price,
             'payment_method' => $request->payment_method,
+            'email'=>$user->email,
+            'name'=>$user->name
         ];
 
         
@@ -67,6 +74,7 @@ class CheckoutController extends Controller
                 'user_id' => $user->id,
                 'total_price' => $request->total_price,
                 'status' => 'pending',
+                
             ]);
 
             // Lưu chi tiết đơn hàng
@@ -90,7 +98,7 @@ class CheckoutController extends Controller
             ]);
             try {
                 Mail::to($user->email)->send(
-                    new OrderShipped($order)
+                    new OrderShipped($orders)
                 );
             } catch (\Exception $e) {
                 Log::error("Lỗi gửi email: " . $e->getMessage());

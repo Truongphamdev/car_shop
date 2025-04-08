@@ -181,6 +181,19 @@ const deleteProduct = (id) => {
       console.log("có lỗi khi thực hiện");
     }
   }
+  // xóa order
+  const removeorder=async (id)=> {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await axios.delete(`http://localhost:8000/home/removeorder/${id}`,
+      {headers:{Authorization: `Bearer ${token}`}}
+      )
+      setOrders((prev) => prev.filter((item) => item.id !== id));
+      console.log(res.data.message)
+    } catch (error) {
+      console.log("có lỗi khi xóa đơn hàng")
+    }
+  }
   return (
     <div>
 
@@ -230,7 +243,7 @@ const deleteProduct = (id) => {
               className="w-full h-40 object-cover mb-2"
             />
             <h3 className="text-lg font-bold">{car.name}</h3>
-            <p className="text-gray-600">Giá: {car.price}</p>
+            <p className="text-gray-600">Giá: {car.price} Đ</p>
             <p className="text-gray-600">Số lượng: {car.quantity}</p>
             <div className="mt-6 flex justify-around">
               <div>
@@ -465,9 +478,9 @@ const deleteProduct = (id) => {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {orders.map((order,i) => (
               <tr key={order.id} className="text-center border-b">
-                <td className="p-2">{order.id}</td>
+                <td className="p-2">{i+1}</td>
                 <td className="p-2">{order.user.name}</td>
                 <td className="p-2">{order.total_price.toLocaleString()}đ</td>
                 <td className="p-2">
@@ -498,6 +511,14 @@ const deleteProduct = (id) => {
                   >
                     Hủy
                   </button>
+                  {order.status === "canceled"?
+                                  <button
+                                  className="px-3 py-1 bg-red-500 text-white rounded"
+                                  onClick={() => removeorder(order.id)}
+                                >
+                                  Xóa
+                                </button>  :""
+                }
                 </td>
               </tr>
             ))}

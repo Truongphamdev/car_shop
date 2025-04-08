@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Mail\ContactReply;
 use App\Models\Cart;
 use App\Models\Contact;
+use App\Models\Order;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
@@ -225,5 +226,12 @@ class CarController extends Controller
         $user->likedCars()->detach($id);
         return response()->json(['message'=>"xóa thành công"]);
 
+    }
+    public function getttOrder() {
+        $user = Auth::id();
+        $order = Order::with('orderDetail.car')->orderBy('created_at', 'desc')->where('user_id',$user)->get();
+        return response()->json([
+            'order'=>$order
+        ]);
     }
 }

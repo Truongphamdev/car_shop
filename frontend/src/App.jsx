@@ -15,6 +15,7 @@ import NewsDetail from "./pages/NewSDetail";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import Like from "./pages/Like";
+import { Profile } from "./pages/Profile";
 
 function Layout() {
     const location = useLocation();
@@ -46,6 +47,8 @@ function Layout() {
                 <Route path="orderSuccess" element={< OrderSuccess/>}/>
                 {/* like */}
                 <Route path="/likes" element={<Like />} />
+                {/* profile */}
+                <Route path="/profile" element={<Profile />} />
             </Routes>
             {!noHeaderRoutes.includes(location.pathname) && <Footer />}
         </div>

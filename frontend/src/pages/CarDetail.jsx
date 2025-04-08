@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams ,Link,useNavigate} from "react-router-dom";
 import axios from "axios";
+import { useCart } from "./CartContext";
 
 const CarDetail = () => {
     const { id } = useParams(); // Lấy ID từ URL
@@ -14,7 +15,8 @@ const CarDetail = () => {
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const navigate = useNavigate();
-
+    const {cart,setCart,fetchCart} = useCart();
+    
     const current_id =localStorage.getItem('current_id');
     console.log("dữ liệu:",current_id)
  
@@ -56,6 +58,7 @@ const CarDetail = () => {
             setLoading(false);
         }
     };
+
     // add giỏ hàng
     const addtoCart = async () => {
         const carImages = JSON.parse(localStorage.getItem('carImages')) || {};
@@ -72,6 +75,7 @@ const CarDetail = () => {
                     Authorization:`Bearer ${token}`
                 }}
             );
+            fetchCart();
             alert(response.data.message);
 
         } catch (error) {
@@ -163,7 +167,7 @@ const CarDetail = () => {
                     <h1 className="text-3xl font-bold">{data.car.name}</h1>
                     <p className="text-gray-600">Thương hiệu: {data.car.brand.name}</p>
                     <p className="text-gray-600">Danh mục: {data.car.category.name}</p>
-                    <p className="text-xl text-red-500 font-semibold mt-4">Giá: {data.car.price.toLocaleString()} $</p>
+                    <p className="text-xl text-red-500 font-semibold mt-4">Giá: {data.car.price.toLocaleString()} Đ</p>
                     <p className="mt-4">{data.car.description}</p>
 
                 <div className="flex space-x-4 mt-6">
@@ -244,7 +248,7 @@ const CarDetail = () => {
                         <div key={related.id} className="bg-white shadow-lg rounded-lg p-4">
                             <img src={`http://localhost:8000/${related.car_image[0].image_url}`} className="w-full h-48 object-cover rounded-lg" />
                             <h3 className="text-xl font-semibold mt-4">{related.name}</h3>
-                            <p className="text-red-500 font-semibold">{related.price.toLocaleString()} $</p>
+                            <p className="text-red-500 font-semibold">{related.price.toLocaleString()} Đ</p>
                             <Link
                                 to={`/home/car/${related.id}`}
                                 className="block bg-blue-500 text-white px-4 py-2 rounded-lg mt-4 text-center hover:bg-blue-600"

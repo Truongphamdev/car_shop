@@ -24,7 +24,9 @@ Route::prefix('home')->middleware(['auth:sanctum'])->group(function () {
         // quản lý đơn hàng
         Route::get('/getorder',[AdminController::class,'getOrder']);
         Route::post('/postorder/{id}',[AdminController::class,'postorder']);
-        // thêm yêu thích
+        // xóa order
+        Route::delete('/removeorder/{id}',[AdminController::class,'destroyOrder']);
+
     });
     // lưu review
     Route::post('/storeReview/{id}',[CarController::class,'storeReview'])->name('storeReview');
@@ -41,6 +43,10 @@ Route::prefix('home')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/likes',[CarController::class,'getlike']);
     Route::post('/addlike/{id}',[CarController::class,'addlike']);
     Route::delete('/removelike/{id}',[CarController::class,'removelike']);  
+    // đổi thông tin
+    Route::post('/updateaccount',[AuthController::class,'updateAccount']);
+    // tt order
+    Route::get('/getttorder',[CarController::class,'getttOrder']);
     
 });
 Route::get('/', function () {
@@ -58,4 +64,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon']);
     Route::post('/checkout', [CheckoutController::class, 'checkout']);
     Route::get('/coupon',[CheckoutController::class,'getcoupon']);
+    Route::get('/getuser',[CheckoutController::class,'getuser']);
 });

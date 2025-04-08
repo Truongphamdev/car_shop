@@ -54,7 +54,7 @@ const Like = () => {
               <div className="p-4">
                 <h3 className="text-xl font-semibold text-gray-800">{car.name}</h3>
                 <p className="text-gray-600">{car.description}</p>
-                <p className="text-red-500 font-bold mt-2">{car.price} $</p>
+                <p className="text-red-500 font-bold mt-2">{car.price.toLocaleString()} Đ</p>
                 <button onClick={()=> removeLike(car.id)} className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl">
                   Bỏ thích
                 </button>
