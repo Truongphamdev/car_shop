@@ -47,7 +47,9 @@ Route::prefix('home')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/updateaccount',[AuthController::class,'updateAccount']);
     // tt order
     Route::get('/getttorder',[CarController::class,'getttOrder']);
-    
+    // lấy liên hệ
+    Route::get('/indexFeedback',[AdminController::class,'index']);
+    Route::post('/reply/{id}',[AdminController::class,'reply']);
 });
 Route::get('/', function () {
     return redirect()->route('home');

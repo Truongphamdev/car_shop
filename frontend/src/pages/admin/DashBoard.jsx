@@ -8,10 +8,42 @@ const DashBoard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [orders,setOrders]=useState([]);
-
+  const [contacts, setContacts] = useState([]);
+  const [replies, setReplies] = useState({});
+  // lấy contact
+  const getContact = async ()=> {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await axios.get('http://localhost:8000/home/indexFeedback',{headers:{Authorization : `Bearer ${token}`}});
+      setContacts(res.data.contacts);
+    } catch (error) {
+      console.log("có lỗi khi lấy contact")
+    }
+  }
+// reply
+  const handleReply=  (id)=> {
+    const replyContent = replies[id] || '';
+    if (!replyContent) {
+      alert("Vui lòng nhập nội dung phản hồi!");
+      return;
+    }
+    const token = localStorage.getItem("token");
+    try {
+       axios.post(`http://localhost:8000/home/reply/${id}`,{replyContent},{headers: {Authorization : `Bearer ${token}`}});
+       setReplies((prev) => ({ ...prev, [id]: '' }));
+       getContact()
+    } catch (error) {
+      console.log("có lỗi khi lưu reply")
+    }
+  }
+// Cập nhật giá trị phản hồi cho từng liên hệ
+const handleReplyChange = (id, value) => {
+  setReplies((prev) => ({ ...prev, [id]: value }));
+};
   useEffect(() => {
     fetchAdmin();
     fetchOrder()
+    getContact()
   }, []);
 
   const token = localStorage.getItem("token");
@@ -525,6 +557,57 @@ const deleteProduct = (id) => {
           </tbody>
         </table>
       </div>
+    <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <h2 className="text-3xl font-bold text-indigo-600 mb-8 text-center">
+        Quản lý liên hệ
+      </h2>
+      {contacts.length === 0 ? (
+        <p className="text-center text-gray-500">Chưa có liên hệ nào</p>
+      ) : (
+        <div className="space-y-6">
+          {contacts.map((contact) => (
+            <div
+              key={contact.id}
+              className="bg-white p-6 rounded-xl shadow-lg border border-gray-200"
+            >
+              <p className="text-gray-700">
+                <strong>Email:</strong> {contact.email}
+              </p>
+              <p className="text-gray-700 mt-2">
+                <strong>Nội dung:</strong> {contact.message}
+              </p>
+              <p className="text-gray-700 mt-2">
+                <strong>Trạng thái:</strong>{' '}
+                <span
+                  className={`font-semibold ${
+                    contact.is_replied ? 'text-green-600' : 'text-red-500'
+                  }`}
+                >
+                  {contact.is_replied ? 'Đã liên hệ' : 'Chưa liên hệ'}
+                </span>
+              </p>
+              {!contact.is_replied && (
+                <div className="mt-4">
+                  <textarea
+                    value={replies[contact.id] || ''}
+                    onChange={(e) => handleReplyChange(contact.id, e.target.value)}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="Nhập phản hồi..."
+                    rows="3"
+                  />
+                  <button
+                    onClick={() => handleReply(contact.id)}
+                    className="mt-2 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition"
+                  >
+                    Gửi phản hồi
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
     </div>
     </div>
     

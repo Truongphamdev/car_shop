@@ -6,11 +6,13 @@ use App\Models\Brand;
 use App\Models\Car;
 use App\Models\Car_image;
 use App\Models\Category;
+use App\Models\Contact;
 use App\Models\Order;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 
 class AdminController extends Controller
@@ -224,6 +226,27 @@ public function destroyOrder($id) {
         Log::error('Lỗi delete completed sản phẩm: '.$e->getMessage());
 
     }
+}
+
+public function index() {
+    $contacts = Contact::take(6)->get();
+    return response()->json([
+        'contacts'=>$contacts
+    ]);
+}
+
+public function reply(Request $request,$id) {
+    $request->validate([
+        'replyContent' => 'required|string',
+    ]);
+
+    $contact = Contact::findOrFail($id);
+    Mail::raw($request->replyContent,function($message) use ($contact) {
+        $message->to($contact->email)->subject("Phản hồi từ quản trị viên");
+    });
+    $contact->update(['is_replied' => 1]);
+
+    return response()->json(['message' => 'Đã gửi phản hồi và cập nhật trạng thái']);
 }
     
 }
