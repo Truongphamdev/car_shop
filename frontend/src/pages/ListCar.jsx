@@ -12,6 +12,7 @@ const ListCar = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [search,setSearch]= useState("");
 
     const fetchData = async (page = data.currentPage) => {
         setLoading(true);
@@ -20,7 +21,7 @@ const ListCar = () => {
             // Sửa cú pháp URL: dùng ? cho tham số đầu tiên, & cho các tham số sau
             const url = `http://localhost:8000/allCar?page=${page}${
                 selectedCategory ? `&category=${selectedCategory}` : ""
-            }`;
+            }${search ? `&search=${search}` : ""}`;
             const response = await axios.get(url);
             
             console.log("Dữ liệu từ API:", response.data);
@@ -40,7 +41,7 @@ const ListCar = () => {
 
     useEffect(() => {
         fetchData(data.currentPage); // Gọi API khi mount hoặc khi selectedCategory/currentPage thay đổi
-    }, [selectedCategory, data.currentPage]);
+    }, [selectedCategory, data.currentPage,search]);
 
     const handlePrevious = () => {
         if (data.currentPage > 1) {
@@ -56,30 +57,45 @@ const ListCar = () => {
 
     return (
         <div className="container mx-auto py-12">
-            <h1 className="text-4xl font-bold text-center mb-8">Danh Sách Xe</h1>
+         <div className="flex flex-col sm:flex-row items-center justify-around gap-4 mb-6">
+    <div className="flex gap-2 w-full sm:w-auto">
+        <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Tìm kiếm theo tên xe..."
+            className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <button
+            onClick={() => fetchData(1)}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+        >
+            Tìm kiếm
+        </button>
+    </div>
 
-            {/* Bộ lọc danh mục */}
-            <div className="mb-8 flex flex-wrap items-center gap-4 justify-center">
-                <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="px-4 py-2 border rounded-lg"
-                >
-                    <option value="">Tất cả danh mục</option>
-                    {Array.isArray(data.categories) &&
-                        data.categories.map((category) => (
-                            <option key={category.id} value={category.id}>
-                                {category.name}
-                            </option>
-                        ))}
-                </select>
-                <button
-                    onClick={() => fetchData(1)} // Reset về trang 1 khi lọc
-                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                    Lọc
-                </button>
-            </div>
+    <div className="flex gap-2">
+        <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+            <option value="">Tất cả danh mục</option>
+            {data.categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                    {category.name}
+                </option>
+            ))}
+        </select>
+        <button
+            onClick={() => fetchData(1)}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+        >
+            Lọc
+        </button>
+    </div>
+</div>
+
 
             {/* Hiển thị danh sách xe */}
             {loading ? (

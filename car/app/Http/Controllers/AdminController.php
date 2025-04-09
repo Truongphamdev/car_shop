@@ -200,9 +200,21 @@ public function getOrder() {
 public function postorder(Request $request, $id) {
     try
     {
-    $order = Order::findOrFail($id);
-    $order->status = $request->status;
-    $order->save();
+        $order = Order::with('user')->findOrFail($id);
+        $oldStatus = $order->status;
+
+        $order->status = $request->status;
+        $order->save();
+
+        // Gửi email với view
+        Mail::send('emails.status', [
+            'order' => $order,
+            'oldStatus' => $oldStatus
+        ], function ($message) use ($order) {
+            $message->to($order->user->email)
+                    ->subject("Cập nhật trạng thái đơn hàng #{$order->id}");
+        });
+
     return response()->json([
         'message'=>"thành công rồi bạn"
     ]);}
@@ -229,7 +241,7 @@ public function destroyOrder($id) {
 }
 
 public function index() {
-    $contacts = Contact::take(6)->get();
+    $contacts = Contact::take(6)->orderBy('created_at', 'desc')->get();
     return response()->json([
         'contacts'=>$contacts
     ]);

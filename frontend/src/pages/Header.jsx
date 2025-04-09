@@ -14,6 +14,11 @@ const Header = () => {
     const carImages = JSON.parse(localStorage.getItem('carImages')) || {};
     const token = localStorage.getItem("token");
     const {cart,setCart,fetchCart} = useCart();
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsOpen(!isOpen);
+    };
     
     useEffect(() => {
         console.log("token: ",token);
@@ -99,49 +104,65 @@ const Header = () => {
                 </a>
 
                 {/* Menu Điều Hướng */}
-                <nav className="hidden md:flex space-x-8">
-                    <a
-                        href="/home"
-                        className={`text-xl ${
-                            window.location.pathname === "/home"
-                                ? "text-blue-600 font-bold"
-                                : "text-gray-700 hover:text-blue-600"
-                        }`}
-                    >
-                        Trang Chủ
-                    </a>
-                    <a
-                        href="/listCar"
-                        className={`text-xl ${
-                            window.location.pathname === "/listCar"
-                                ? "text-blue-600 font-bold"
-                                : "text-gray-700 hover:text-blue-600"
-                        }`}
-                    >
-                        Sản Phẩm
-                    </a>
-                    <a href="/about" className={`text-xl ${
-                            window.location.pathname === "/about"
-                                ? "text-blue-600 font-bold"
-                                : "text-gray-700 hover:text-blue-600"
-                        }`}>
-                        Giới Thiệu
-                    </a>
-                    <a href="/contact" className={`text-xl ${
-                            window.location.pathname === "/contact"
-                                ? "text-blue-600 font-bold"
-                                : "text-gray-700 hover:text-blue-600"
-                        }`}>
-                        Liên Hệ
-                    </a>
-                    <a href="/likes" className={`text-xl ${
-                            window.location.pathname === "/likes"
-                                ? "text-blue-600 font-bold"
-                                : "text-gray-700 hover:text-blue-600"
-                        }`}>
-                        Yêu Thích
-                    </a>
-                </nav>
+                <nav className="flex items-center justify-between p-4 bg-white ">
+            <div className="md:hidden">
+                <button onClick={toggleMenu} className="text-gray-700 focus:outline-none">
+                    {isOpen ? '✖' : '☰'}
+                </button>
+            </div>
+            <div className={`md:flex space-x-8 ${isOpen ? 'block' : 'hidden'} md:block`}>
+                <a
+                    href="/home"
+                    className={`text-xl ${
+                        window.location.pathname === "/home"
+                            ? "text-blue-600 font-bold"
+                            : "text-gray-700 hover:text-blue-600"
+                    }`}
+                >
+                    Trang Chủ
+                </a>
+                <a
+                    href="/listCar"
+                    className={`text-xl ${
+                        window.location.pathname === "/listCar"
+                            ? "text-blue-600 font-bold"
+                            : "text-gray-700 hover:text-blue-600"
+                    }`}
+                >
+                    Sản Phẩm
+                </a>
+                <a
+                    href="/about"
+                    className={`text-xl ${
+                        window.location.pathname === "/about"
+                            ? "text-blue-600 font-bold"
+                            : "text-gray-700 hover:text-blue-600"
+                    }`}
+                >
+                    Giới Thiệu
+                </a>
+                <a
+                    href="/contact"
+                    className={`text-xl ${
+                        window.location.pathname === "/contact"
+                            ? "text-blue-600 font-bold"
+                            : "text-gray-700 hover:text-blue-600"
+                    }`}
+                >
+                    Liên Hệ
+                </a>
+                <a
+                    href="/likes"
+                    className={`text-xl ${
+                        window.location.pathname === "/likes"
+                            ? "text-blue-600 font-bold"
+                            : "text-gray-700 hover:text-blue-600"
+                    }`}
+                >
+                    Yêu Thích
+                </a>
+            </div>
+        </nav>
 
                 {/* Giỏ Hàng & Tài Khoản */}
                 <div className="flex items-center space-x-4">

@@ -96,7 +96,9 @@ class CarController extends Controller
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
         }
-    
+        if ($request->has('search')) {
+            $query->where('name', 'LIKE', '%' . $request->search . '%');
+        }
         $cars = $query->with('car_image')->paginate(12);
         $categories = Category::all();
         return response()->json([
@@ -146,7 +148,7 @@ class CarController extends Controller
     }
     // cart
     public function indexCart() {
-        $cart = Cart::where('user_id',Auth::id())->with('car')->get();
+        $cart = Cart::where('user_id',Auth::id())->with('car.car_image')->get();
         return response()->json([
             'cart'=>$cart
         ]);

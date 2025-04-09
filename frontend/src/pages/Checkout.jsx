@@ -18,6 +18,7 @@ const Checkout = () => {
   const location = useLocation();
   const {cart,setCart,fetchCart} = useCart();
 console.log("dữ liêu; quý",location.state); // Kiểm tra dữ liệu state có đúng không
+const selectedImage = JSON.parse(localStorage.getItem('selectedCarImage'));
 
   useEffect(() => {
     fetchShippingOptions();
@@ -51,6 +52,8 @@ console.log("dữ liêu; quý",location.state); // Kiểm tra dữ liệu state 
       }
       else {
         setCart(cart);
+  console.log("dữ liệu cart",cart)
+
       }
     },[location.state])
 
@@ -191,7 +194,8 @@ console.log("dữ liêu; quý",location.state); // Kiểm tra dữ liệu state 
         <ul className="divide-y divide-gray-200">
           {car ? (
             <li className="flex justify-between py-3 text-gray-700">
-              <span className="font-medium">{car.name} (x{1})</span>
+        <span className="font-medium">{car.name} (x{car.quantity || 1})</span>
+        <img src={`http://localhost:8000/${selectedImage}`} className="w-[100px] rounded" alt={car.name} />
               <span className="text-gray-900 font-semibold">
                 {car.price.toLocaleString()} Đ
               </span>
@@ -202,6 +206,7 @@ console.log("dữ liêu; quý",location.state); // Kiểm tra dữ liệu state 
             cart.map((item) => (
               <li key={item.id} className="flex justify-between py-3 text-gray-700">
                 <span className="font-medium">{item.car.name} (x{item.quantity})</span>
+        <img src={`http://localhost:8000/${item.car.car_image[0].image_url}`} className="w-[100px] rounded" alt={item.car.name} />
                 <span className="text-gray-900 font-semibold">
                   {(item.car.price * item.quantity).toLocaleString()} Đ
                 </span>
